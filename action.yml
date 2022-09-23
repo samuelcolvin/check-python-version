@@ -1,0 +1,21 @@
+name: Check Python Version
+author: Samuel Colvin <s@muelcolvin.com>
+description: Check the release tag matches the library version before deploy
+
+inputs:
+  version_file_path:
+    description: Path to python file containing the version number string
+    required: true
+  version_pattern:
+    description: >
+      Custom regular expression to find version with, defaults to
+      `(?i)^(__version__|VERSION) *= *([\'"])v?(?P<version>.+?)\2`
+    required: false
+
+runs:
+  using: docker
+  image: Dockerfile
+
+branding:
+  icon: check-circle
+  color: orange
