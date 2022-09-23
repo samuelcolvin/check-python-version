@@ -15,8 +15,16 @@ jobs:
     steps:
       - ...
       - uses: samuelcolvin/check-python-version@v1
+        id: check-python-version
         with:
           version_file_path: mypackage/version.py
+
+      - run: ...
+
+      # optionally you can use the environment variables set by the action later
+      - name: publish docs
+        if: '!fromJSON(steps.check-python-version.outputs.IS_PRERELEASE)'
+        uses: ...
 ```
 
 ### Inputs
