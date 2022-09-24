@@ -24,7 +24,7 @@ jobs:
       - run: >
           docker run --rm
           -e INPUT_VERSION_FILE_PATH
-          -e GITHUB_RER
+          -e GITHUB_REF
           -v `pwd`:/app
           check-python-version
         id: check-python-version
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          mkdir foobar
+          mkdir mypackage
           echo "__version__ = 'v1.0post1'" > mypackage/version.py
 
       - uses: samuelcolvin/check-python-version@main
