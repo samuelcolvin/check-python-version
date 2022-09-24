@@ -20,14 +20,17 @@ def main() -> int:
     tag = re.sub('^refs/tags/', '', git_ref.lower())
     p_tag = parse_version(tag)
 
-    version_pattern = os.getenv('INPUT_VERSION_PATTERN', DEFAULT_PATTERN)
+    version_pattern = os.getenv('INPUT_VERSION_PATTERN') or DEFAULT_PATTERN
     version_content = version_path.read_text()
     m = re.search(version_pattern, version_content, flags=re.M)
     if m is None:
         raise RuntimeError(
             f'version not found with regex {version_pattern!r} in {version_path}, content:\n{version_content}'
         )
-    version = m.group('version')
+    try:
+        version = m.group('version')
+    except IndexError:
+        raise RuntimeError(f'Group "version" not found in with regex {version_pattern!r}')
     p_version = parse_version(version)
     if p_tag == p_version:
         is_prerelease = p_version.is_prerelease
