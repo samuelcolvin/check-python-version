@@ -12,7 +12,7 @@ GITHUB_REF = 'GITHUB_REF'
 
 
 def main() -> int:
-    version_path = Path(get_env('input_version_file_path'))
+    version_path = Path(get_env('INPUT_VERSION_FILE_PATH'))
     if not version_path.is_file():
         raise RuntimeError(f'"{version_path}" is not a file')
 
@@ -20,7 +20,7 @@ def main() -> int:
     tag = re.sub('^refs/tags/', '', git_ref.lower())
     p_tag = parse_version(tag)
 
-    version_pattern = os.getenv('input_version_pattern', DEFAULT_PATTERN)
+    version_pattern = os.getenv('INPUT_VERSION_PATTERN', DEFAULT_PATTERN)
     version_content = version_path.read_text()
     m = re.search(version_pattern, version_content, flags=re.M)
     if m is None:

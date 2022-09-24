@@ -9,4 +9,4 @@ COPY ./action.yml /app/
 
 WORKDIR /app
 
-CMD ["/app/main.py"]
+CMD ["python", "/app/main.py"]
