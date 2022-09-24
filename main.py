@@ -4,11 +4,10 @@ import re
 import sys
 from pathlib import Path
 
-from packaging.version import parse as parse_version
+from packaging.version import Version
 
 # taken verbatim from hatch/hatchling so the logic should match
 DEFAULT_PATTERN = r'(?i)^(__version__|VERSION) *= *([\'"])v?(?P<version>.+?)\2'
-GITHUB_REF = 'GITHUB_REF'
 
 
 def main() -> int:
@@ -16,9 +15,13 @@ def main() -> int:
     if not version_path.is_file():
         raise RuntimeError(f'"{version_path}" is not a file')
 
-    git_ref = get_env(GITHUB_REF)
-    tag = re.sub('^refs/tags/', '', git_ref.lower())
-    p_tag = parse_version(tag)
+    github_ref_env_var = os.getenv('GH_REF_ENV_VAR') or 'GITHUB_REF'
+    github_ref = get_env(github_ref_env_var)
+    tag_str = re.sub('^refs/tags/', '', github_ref.lower())
+    try:
+        tag = Version(tag_str)
+    except ValueError as e:
+        raise RuntimeError(f'{github_ref_env_var}, {e}')
 
     version_pattern = os.getenv('INPUT_VERSION_PATTERN') or DEFAULT_PATTERN
     version_content = version_path.read_text()
@@ -28,22 +31,25 @@ def main() -> int:
             f'version not found with regex {version_pattern!r} in {version_path}, content:\n{version_content}'
         )
     try:
-        version = m.group('version')
+        file_version_str = m.group('version')
     except IndexError:
         raise RuntimeError(f'Group "version" not found in with regex {version_pattern!r}')
-    p_version = parse_version(version)
-    if p_tag == p_version:
-        is_prerelease = p_version.is_prerelease
-        print(
-            f'✓ {GITHUB_REF} environment variable {git_ref!r} matches package version: {version!r}, '
-            f'is pre-release: {is_prerelease}'
-        )
+
+    try:
+        file_version = Version(file_version_str)
+    except ValueError as e:
+        raise RuntimeError(f'{version_path}, {e}')
+    print(f'{github_ref_env_var} environment variable version: "{github_ref}"')
+    print(f'"{version_path}" version: "{file_version_str}"\n')
+    if tag == file_version:
+        is_prerelease = str(file_version.is_prerelease).lower()
+        print(f'✓ versions match, is pre-release: {is_prerelease}, pretty version: "{file_version}"')
         print('(setting "IS_PRERELEASE" and "VERSION" environment variables for future use)')
-        print(f'::set-output name=IS_PRERELEASE::{str(is_prerelease).lower()}')
-        print(f'::set-output name=VERSION::{version}')
+        print(f'::set-output name=IS_PRERELEASE::{is_prerelease}')
+        print(f'::set-output name=VERSION::{file_version}')
         return 0
     else:
-        print(f'✖ {GITHUB_REF} environment variable {git_ref!r} does not match package version: {tag!r} != {version!r}')
+        print(f'✖ versions do not match, "{tag}" != "{file_version}"')
         return 1
 
 
