@@ -1,5 +1,7 @@
 # Check Python Version
 
+[![CI](https://github.com/samuelcolvin/check-python-version/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/samuelcolvin/check-python-version/actions/workflows/ci.yml)
+
 Check the release tag matches the library version before deploy.
 
 This is designed to be used in deploy jobs to check that GitHub release tag matches the version in your code.
