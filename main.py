@@ -15,7 +15,8 @@ def main() -> int:
     if not version_path.is_file():
         raise RuntimeError(f'"{version_path}" is not a file')
 
-    github_ref, github_ref_env_var = get_env('GITHUB_REF', 'TEST_GITHUB_REF')
+    # INPUT_TEST_GITHUB_REF comes first so we can test with it even when GITHUB_REF is set
+    github_ref, github_ref_env_var = get_env('INPUT_TEST_GITHUB_REF', 'GITHUB_REF')
     tag_str = re.sub('^refs/tags/', '', github_ref.lower())
     try:
         tag = Version(tag_str)

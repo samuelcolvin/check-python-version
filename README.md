@@ -6,6 +6,14 @@ Check the release tag matches the library version before deploy.
 
 This is designed to be used in deploy jobs to check that GitHub release tag matches the version in your code.
 
+The following output variables are set by the action for use in later steps:
+* `IS_PRERELEASE`, either `'true'` or `'false'` whether the version is a pre-release, 
+  uses [`packing.Version.is_prerelease`](https://packaging.pypa.io/en/latest/version.html#usage)
+* `VERSION`, which is the "pretty" version string, 
+  using [`str(packing.Version)`](https://packaging.pypa.io/en/latest/version.html#usage)
+
+See usage below for an example of how to access these values.
+
 ## Usage
 
 A minimal example:
@@ -35,3 +43,4 @@ jobs:
 * **`version_pattern`**: Custom regular expression to find version with,
   defaults to `(?i)^(__version__|VERSION) *= *([\'"])v?(?P<version>.+?)\2` 
   (which matches [hatchling](https://hatch.pypa.io/latest/plugins/build-hook/version/))
+* **`test_github_ref`**: Version to check, defaults to using `GITHUB_REF` - this is mostly for testing

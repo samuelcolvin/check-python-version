@@ -11,6 +11,9 @@ inputs:
       Custom regular expression to find version with, defaults to
       `(?i)^(__version__|VERSION) *= *([\'"])v?(?P<version>.+?)\2`
     required: false
+  test_github_ref:
+    description: Version to check, defaults to using `GITHUB_REF` - this is mostly for testing
+    required: false
 
 runs:
   using: docker
