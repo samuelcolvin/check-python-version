@@ -11,12 +11,11 @@ DEFAULT_PATTERN = r'(?i)^(__version__|VERSION) *= *([\'"])v?(?P<version>.+?)\2'
 
 
 def main() -> int:
-    version_path = Path(get_env('INPUT_VERSION_FILE_PATH'))
+    version_path = Path(get_env('INPUT_VERSION_FILE_PATH')[0])
     if not version_path.is_file():
         raise RuntimeError(f'"{version_path}" is not a file')
 
-    github_ref_env_var = os.getenv('GH_REF_ENV_VAR') or 'GITHUB_REF'
-    github_ref = get_env(github_ref_env_var)
+    github_ref, github_ref_env_var = get_env('GITHUB_REF', 'TEST_GITHUB_REF')
     tag_str = re.sub('^refs/tags/', '', github_ref.lower())
     try:
         tag = Version(tag_str)
@@ -53,11 +52,14 @@ def main() -> int:
         return 1
 
 
-def get_env(name: str) -> str:
-    version_path = os.getenv(name)
-    if not version_path:
-        raise RuntimeError(f'"{name}" environment variable not found')
-    return version_path
+def get_env(*names: str) -> tuple[str, str]:
+    for name in names:
+        value = os.getenv(name)
+        if value:
+            return value, name
+    names_str = ', '.join(f'"{name}"' for name in names)
+    plural = '' if len(names) == 1 else 's'
+    raise RuntimeError(f'{names_str} environment variable{plural} not found')
 
 
 if __name__ == '__main__':
