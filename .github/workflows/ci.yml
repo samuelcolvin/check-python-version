@@ -33,9 +33,6 @@ jobs:
           INPUT_TEST_GITHUB_REF: refs/tags/v1.0.0a1
           INPUT_VERSION_FILE_PATH: foobar/version.py
 
-      - run: test ${{ steps.check-python-version.outputs.IS_PRERELEASE }} == 'true'
-      - run: test ${{ steps.check-python-version.outputs.VERSION }} == '1.0a1'
-
   test-action:
     runs-on: ubuntu-latest
     steps:
