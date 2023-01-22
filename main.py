@@ -45,7 +45,7 @@ def main() -> int:
         is_prerelease = str(file_version.is_prerelease).lower()
         print(f'✓ versions match, is pre-release: {is_prerelease}, pretty version: "{file_version}"')
 
-        github_output = os.getenv('GITHUB_OUTPUT')
+        github_output = os.getenv('ALT_GITHUB_OUTPUT') or os.getenv('GITHUB_OUTPUT')
         if github_output:
             print('Setting "IS_PRERELEASE" and "VERSION" environment variables for future use')
             with open(github_output, 'a') as f:
