@@ -35,6 +35,7 @@ jobs:
           INPUT_VERSION_FILE_PATH: foobar/version.py
           ALT_GITHUB_OUTPUT: /app/output.txt
 
+      - run: cat output.txt
       - run: grep -q 'IS_PRERELEASE=true' output.txt
       - run: grep -q 'VERSION="1.0a1"' output.txt
 
