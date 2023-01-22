@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import os
 import re
 import sys
@@ -44,9 +45,15 @@ def main() -> int:
     if tag == file_version:
         is_prerelease = str(file_version.is_prerelease).lower()
         print(f'✓ versions match, is pre-release: {is_prerelease}, pretty version: "{file_version}"')
-        print('(setting "IS_PRERELEASE" and "VERSION" environment variables for future use)')
-        print(f'::set-output name=IS_PRERELEASE::{is_prerelease}')
-        print(f'::set-output name=VERSION::{file_version}')
+
+        github_output = os.getenv('GITHUB_OUTPUT')
+        if github_output:
+            print('Setting "IS_PRERELEASE" and "VERSION" environment variables for future use')
+            with open(github_output, 'a') as f:
+                f.write(f'IS_PRERELEASE={json.dumps(is_prerelease)}\n')
+                f.write(f'VERSION={json.dumps(file_version)}\n')
+        else:
+            print(f'Warning: GITHUB_OUTPUT not set, cannot set "IS_PRERELEASE" and "VERSION" environment variables')
         return 0
     else:
         print(f'✖ versions do not match, "{tag}" != "{file_version}"')
