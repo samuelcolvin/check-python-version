@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import json
 import os
 import re
 import sys
@@ -50,8 +49,8 @@ def main() -> int:
         if github_output:
             print('Setting "IS_PRERELEASE" and "VERSION" environment variables for future use')
             with open(github_output, 'a') as f:
-                f.write(f'IS_PRERELEASE={json.dumps(is_prerelease)}\n')
-                f.write(f'VERSION={json.dumps(file_version)}\n')
+                f.write(f'IS_PRERELEASE={is_prerelease}\n')
+                f.write(f'VERSION="{file_version}"\n')
         else:
             print(f'Warning: GITHUB_OUTPUT not set, cannot set "IS_PRERELEASE" and "VERSION" environment variables')
         return 0
