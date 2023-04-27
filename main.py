@@ -43,7 +43,12 @@ def main() -> int:
     print(f'"{version_path}" version: "{file_version_str}"\n')
     if tag == file_version:
         is_prerelease = str(file_version.is_prerelease).lower()
-        print(f'✓ versions match, is pre-release: {is_prerelease}, pretty version: "{file_version}"')
+        version_major_minor = f'{file_version.major}.{file_version.minor}'
+        print(
+            f'✓ versions match, '
+            f'is pre-release: {is_prerelease}, '
+            f'pretty version: "{file_version}", '
+            f'major.minor: "{version_major_minor}"')
 
         github_output = os.getenv('ALT_GITHUB_OUTPUT') or os.getenv('GITHUB_OUTPUT')
         if github_output:
@@ -51,8 +56,9 @@ def main() -> int:
             with open(github_output, 'a') as f:
                 f.write(f'IS_PRERELEASE={is_prerelease}\n')
                 f.write(f'VERSION="{file_version}"\n')
+                f.write(f'VERSION_MAJOR_MINOR="{version_major_minor}"\n')
         else:
-            print(f'Warning: GITHUB_OUTPUT not set, cannot set "IS_PRERELEASE" and "VERSION" environment variables')
+            print(f'Warning: GITHUB_OUTPUT not set, cannot set environment variables')
         return 0
     else:
         print(f'✖ versions do not match, "{tag}" != "{file_version}"')
