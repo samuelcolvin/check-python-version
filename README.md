@@ -45,3 +45,5 @@ jobs:
   defaults to `(?i)^(__version__|VERSION) *= *([\'"])v?(?P<version>.+?)\2` 
   (which matches [hatchling](https://hatch.pypa.io/latest/plugins/build-hook/version/))
 * **`test_github_ref`**: Version to check, defaults to using `GITHUB_REF` - this is mostly for testing
+* **`skip_env_check`**: Set to "true" to skip environment variable (e.g. `GITHUB_REF`, or `input.test_github_ref`) 
+  check, mostly useful when you want to use outputs in later steps

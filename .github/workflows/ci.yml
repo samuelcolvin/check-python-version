@@ -28,7 +28,6 @@ jobs:
           -e ALT_GITHUB_OUTPUT
           -v `pwd`:/app
           check-python-version
-        id: check-python-version
         env:
           # we can't use GITHUB_REF, so we use the backup var name
           INPUT_TEST_GITHUB_REF: refs/tags/v1.0.0a1
@@ -47,7 +46,6 @@ jobs:
           -e ALT_GITHUB_OUTPUT
           -v `pwd`:/app
           check-python-version
-        id: check-python-version
         env:
           INPUT_SKIP_ENV_CHECK: true
           INPUT_VERSION_FILE_PATH: foobar/version.py
