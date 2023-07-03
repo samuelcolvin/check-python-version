@@ -11,6 +11,7 @@ The following output variables are set by the action for use in later steps:
   uses [`packing.Version.is_prerelease`](https://packaging.pypa.io/en/latest/version.html#usage)
 * `VERSION`, which is the "pretty" version string, 
   using [`str(packing.Version)`](https://packaging.pypa.io/en/latest/version.html#usage)
+* `VERSION_MAJOR_MINOR`, major and minor version numbers, e.g. `1.2.3` would output `1.2`
 
 See usage below for an example of how to access these values.
 

@@ -11,18 +11,54 @@ DEFAULT_PATTERN = r'(?i)^(__version__|VERSION) *= *([\'"])v?(?P<version>.+?)\2'
 
 
 def main() -> int:
+    version_path = get_version_path()
+
+    file_version = get_file_version(version_path)
+
+    env_tag = get_env_version()
+
+    if env_tag is None:
+        return set_outputs('✓ env version not checked', file_version)
+    elif env_tag == file_version:
+        return set_outputs('✓ versions match', file_version)
+    else:
+        print(f'✖ versions do not match, "{tag}" != "{file_version}"')
+        return 1
+
+
+def get_version_path() -> Path:
     version_path = Path(get_env('INPUT_VERSION_FILE_PATH')[0])
-    if not version_path.is_file():
+    if version_path.is_file():
+        return version_path
+    else:
         raise RuntimeError(f'"{version_path}" is not a file')
 
-    # INPUT_TEST_GITHUB_REF comes first so we can test with it even when GITHUB_REF is set
-    github_ref, github_ref_env_var = get_env('INPUT_TEST_GITHUB_REF', 'GITHUB_REF')
-    tag_str = re.sub('^refs/tags/', '', github_ref.lower())
-    try:
-        tag = Version(tag_str)
-    except ValueError as e:
-        raise RuntimeError(f'{github_ref_env_var}, {e}')
 
+def get_env_version() -> Version | None:
+    """
+    Get the version from the environment variable INPUT_TEST_GITHUB_REF or GITHUB_REF
+
+    :return: the version or None if `skip_env_check=true`
+    """
+    skip_env_check_str = os.getenv('INPUT_SKIP_ENV_CHECK') or ''
+    skip_env_check = skip_env_check_str.lower() in ('1', 'true')
+
+    if skip_env_check:
+        print('Skipping environment variable check')
+        return None
+    else:
+        # INPUT_TEST_GITHUB_REF comes first so we can test with it even when GITHUB_REF is set
+        github_ref, github_ref_env_var = get_env('INPUT_TEST_GITHUB_REF', 'GITHUB_REF')
+        tag_str = re.sub('^refs/tags/', '', github_ref.lower())
+        try:
+            tag = Version(tag_str)
+        except ValueError as e:
+            raise RuntimeError(f'{github_ref_env_var}, {e}')
+        print(f'{github_ref_env_var} environment variable version: "{github_ref}"')
+        return tag
+
+
+def get_file_version(version_path: Path) -> Version:
     version_pattern = os.getenv('INPUT_VERSION_PATTERN') or DEFAULT_PATTERN
     version_content = version_path.read_text()
     m = re.search(version_pattern, version_content, flags=re.M)
@@ -39,30 +75,31 @@ def main() -> int:
         file_version = Version(file_version_str)
     except ValueError as e:
         raise RuntimeError(f'{version_path}, {e}')
-    print(f'{github_ref_env_var} environment variable version: "{github_ref}"')
-    print(f'"{version_path}" version: "{file_version_str}"\n')
-    if tag == file_version:
-        is_prerelease = str(file_version.is_prerelease).lower()
-        version_major_minor = f'{file_version.major}.{file_version.minor}'
-        print(
-            f'✓ versions match, '
-            f'is pre-release: {is_prerelease}, '
-            f'pretty version: "{file_version}", '
-            f'major.minor: "{version_major_minor}"')
-
-        github_output = os.getenv('ALT_GITHUB_OUTPUT') or os.getenv('GITHUB_OUTPUT')
-        if github_output:
-            print('Setting "IS_PRERELEASE" and "VERSION" environment variables for future use')
-            with open(github_output, 'a') as f:
-                f.write(f'IS_PRERELEASE={is_prerelease}\n')
-                f.write(f'VERSION="{file_version}"\n')
-                f.write(f'VERSION_MAJOR_MINOR="{version_major_minor}"\n')
-        else:
-            print(f'Warning: GITHUB_OUTPUT not set, cannot set environment variables')
-        return 0
     else:
-        print(f'✖ versions do not match, "{tag}" != "{file_version}"')
-        return 1
+        print(f'"{version_path}" version: "{file_version_str}"\n')
+        return file_version
+
+
+def set_outputs(prefix: str, file_version: Version) -> int:
+    is_prerelease = str(file_version.is_prerelease).lower()
+    version_major_minor = f'{file_version.major}.{file_version.minor}'
+    print(
+        f'{prefix}, '
+        f'is pre-release: {is_prerelease}, '
+        f'pretty version: "{file_version}", '
+        f'major.minor: "{version_major_minor}"'
+    )
+
+    github_output = os.getenv('ALT_GITHUB_OUTPUT') or os.getenv('GITHUB_OUTPUT')
+    if github_output:
+        print('Setting "IS_PRERELEASE" and "VERSION" environment variables for future use')
+        with open(github_output, 'a') as f:
+            f.write(f'IS_PRERELEASE={is_prerelease}\n')
+            f.write(f'VERSION="{file_version}"\n')
+            f.write(f'VERSION_MAJOR_MINOR="{version_major_minor}"\n')
+    else:
+        print(f'Warning: GITHUB_OUTPUT not set, cannot set environment variables')
+    return 0
 
 
 def get_env(*names: str) -> tuple[str, str]:

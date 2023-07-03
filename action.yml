@@ -14,6 +14,11 @@ inputs:
   test_github_ref:
     description: Version to check, defaults to using `GITHUB_REF` - this is mostly for testing
     required: false
+  skip_env_check:
+    description: >
+      Set to "true" to skip environment variable (e.g. `GITHUB_REF`, or `input.test_github_ref`) check,
+      mostly useful when you want to use outputs in later steps
+    required: false
 
 runs:
   using: docker
