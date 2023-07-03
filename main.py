@@ -18,11 +18,11 @@ def main() -> int:
     env_tag = get_env_version()
 
     if env_tag is None:
-        return set_outputs('✓ env version not checked', file_version)
+        return set_outputs('environment variable check skipped', file_version)
     elif env_tag == file_version:
         return set_outputs('✓ versions match', file_version)
     else:
-        print(f'✖ versions do not match, "{tag}" != "{file_version}"')
+        print(f'✖ versions do not match, "{env_tag}" != "{file_version}"')
         return 1
 
 
@@ -44,7 +44,6 @@ def get_env_version() -> Version | None:
     skip_env_check = skip_env_check_str.lower() in ('1', 'true')
 
     if skip_env_check:
-        print('Skipping environment variable check')
         return None
     else:
         # INPUT_TEST_GITHUB_REF comes first so we can test with it even when GITHUB_REF is set
