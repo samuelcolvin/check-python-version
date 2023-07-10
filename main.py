@@ -94,8 +94,8 @@ def set_outputs(prefix: str, file_version: Version) -> int:
         print('Setting "IS_PRERELEASE" and "VERSION" environment variables for future use')
         with open(github_output, 'a') as f:
             f.write(f'IS_PRERELEASE={is_prerelease}\n')
-            f.write(f'VERSION="{file_version}"\n')
-            f.write(f'VERSION_MAJOR_MINOR="{version_major_minor}"\n')
+            f.write(f'VERSION={file_version}\n')
+            f.write(f'VERSION_MAJOR_MINOR={version_major_minor}\n')
     else:
         print(f'Warning: GITHUB_OUTPUT not set, cannot set environment variables')
     return 0
