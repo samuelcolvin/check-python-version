@@ -26,26 +26,24 @@ jobs:
       - run: |
           mkdir foobar
           echo "VERSION = '1.0a1'" > foobar/version.py
-          touch /app/output1.txt
 
       - run: uv run main.py
         env:
           # we can't use GITHUB_REF, so we use the backup var name
           INPUT_TEST_GITHUB_REF: refs/tags/v1.0.0a1
           INPUT_VERSION_FILE_PATH: foobar/version.py
-          ALT_GITHUB_OUTPUT: /app/output1.txt
+          ALT_GITHUB_OUTPUT: output1.txt
 
       - run: cat output1.txt
       - run: grep -q 'IS_PRERELEASE=true' output1.txt
       - run: grep -q 'VERSION=1.0a1' output1.txt
 
       - run: echo "VERSION = '1.1.1'" > foobar/version.py
-      - run: touch /app/output2.txt
       - run: uv run main.py
         env:
           INPUT_SKIP_ENV_CHECK: true
           INPUT_VERSION_FILE_PATH: foobar/version.py
-          ALT_GITHUB_OUTPUT: /app/output2.txt
+          ALT_GITHUB_OUTPUT: output2.txt
 
       - run: cat output2.txt
       - run: grep -q 'IS_PRERELEASE=false' output2.txt
