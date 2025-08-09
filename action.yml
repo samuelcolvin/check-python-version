@@ -20,6 +20,17 @@ inputs:
       mostly useful when you want to use outputs in later steps
     required: false
 
+outputs:
+  IS_PRERELEASE:
+    description: "Either `'true'` or `'false'` whether the version is a pre-release"
+    value: ${{ steps.check-python-version.outputs.IS_PRERELEASE }}
+  VERSION:
+    description: The "pretty" version string
+    value: ${{ steps.check-python-version.outputs.VERSION }}
+  VERSION_MAJOR_MINOR:
+    description: "Major and minor version numbers, e.g. `1.2.3` would output `1.2`"
+    value: ${{ steps.check-python-version.outputs.VERSION_MAJOR_MINOR }}
+
 runs:
   using: composite
   steps:
@@ -28,7 +39,13 @@ runs:
         enable-cache: true
         python-version: 3.13
 
+    - run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
+      shell: bash
+      env:
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
+
     - run: check-python-version.py
+      id: check-python-version
       shell: bash
 
 branding:
