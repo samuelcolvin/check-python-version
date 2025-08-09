@@ -50,7 +50,7 @@ runs:
       env:
         INPUT_VERSION_FILE_PATH: ${{ inputs.version_file_path }}
         INPUT_VERSION_PATTERN: ${{ inputs.version_pattern }}
-        INPUT_VERSION_PATH: ${{ inputs.version_path }}
+        INPUT_TEST_GITHUB_REF: ${{ inputs.test_github_ref }}
         INPUT_SKIP_ENV_CHECK: ${{ inputs.skip_env_check }}
 
 branding:
