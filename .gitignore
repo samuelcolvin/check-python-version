@@ -3,3 +3,4 @@
 /.idea/
 *.py[cod]
 /foobar/
+.python-version

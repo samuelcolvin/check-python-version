@@ -21,8 +21,14 @@ inputs:
     required: false
 
 runs:
-  using: docker
-  image: Dockerfile
+  using: composite
+  steps:
+    - uses: astral-sh/setup-uv@v6
+      with:
+        enable-cache: true
+        python-version: 3.13
+    - run: uv run main.py
+      shell: bash
 
 branding:
   icon: check-circle
