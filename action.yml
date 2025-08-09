@@ -27,7 +27,8 @@ runs:
       with:
         enable-cache: true
         python-version: 3.13
-    - run: uv run main.py
+
+    - run: check-python-version.py
       shell: bash
 
 branding:
