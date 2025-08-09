@@ -47,6 +47,11 @@ runs:
     - run: check-python-version.py
       id: check-python-version
       shell: bash
+      env:
+        INPUT_VERSION_FILE_PATH: ${{ inputs.version_file_path }}
+        INPUT_VERSION_PATTERN: ${{ inputs.version_pattern }}
+        INPUT_VERSION_PATH: ${{ inputs.version_path }}
+        INPUT_SKIP_ENV_CHECK: ${{ inputs.skip_env_check }}
 
 branding:
   icon: check-circle
