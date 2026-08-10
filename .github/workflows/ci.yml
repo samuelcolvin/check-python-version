@@ -1,19 +1,22 @@
 name: CI
+
 on:
   push:
     branches:
       - main
     tags:
-      - "**"
+      - '**'
   pull_request: {}
+
 permissions:
   contents: read
+
 jobs:
   test-package:
     runs-on: ubuntu-latest
     env:
       UV_PYTHON: 3.13
-      UV_FROZEN: "1"
+      UV_FROZEN: '1'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -42,6 +45,7 @@ jobs:
       - run: cat output2.txt
       - run: grep -q 'IS_PRERELEASE=false' output2.txt
       - run: grep -q 'VERSION=1.1.1' output2.txt
+
   test-action:
     runs-on: ubuntu-latest
     steps:

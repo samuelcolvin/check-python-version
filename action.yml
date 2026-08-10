@@ -20,13 +20,13 @@ inputs:
     required: false
 outputs:
   IS_PRERELEASE:
-    description: "Either `'true'` or `'false'` whether the version is a pre-release"
+    description: 'Either `''true''` or `''false''` whether the version is a pre-release'
     value: ${{ steps.check-python-version.outputs.IS_PRERELEASE }}
   VERSION:
     description: The "pretty" version string
     value: ${{ steps.check-python-version.outputs.VERSION }}
   VERSION_MAJOR_MINOR:
-    description: "Major and minor version numbers, e.g. `1.2.3` would output `1.2`"
+    description: 'Major and minor version numbers, e.g. `1.2.3` would output `1.2`'
     value: ${{ steps.check-python-version.outputs.VERSION_MAJOR_MINOR }}
 runs:
   using: composite
@@ -35,7 +35,7 @@ runs:
       with:
         enable-cache: true
         python-version: 3.13
-    - run: "\"$GITHUB_ACTION_PATH/check-python-version.py\""
+    - run: '"$GITHUB_ACTION_PATH/check-python-version.py"'
       id: check-python-version
       shell: bash
       env:
