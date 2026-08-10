@@ -37,7 +37,6 @@ runs:
     - uses: astral-sh/setup-uv@v6
       with:
         enable-cache: true
-        python-version: 3.13
 
     - run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
       shell: bash
