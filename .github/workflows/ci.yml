@@ -5,46 +5,42 @@ on:
     branches:
       - main
     tags:
-      - "**"
+      - '**'
   pull_request: {}
+
+permissions:
+  contents: read
 
 jobs:
   test-package:
     runs-on: ubuntu-latest
-
     env:
       UV_PYTHON: 3.13
-      UV_FROZEN: "1"
-
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          enable-cache: true
-
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true # zizmor: ignore[cache-poisoning]
       - run: |
           mkdir foobar
           echo "VERSION = '1.0a1'" > foobar/version.py
-
       - run: ./check-python-version.py
         env:
           # we can't use GITHUB_REF, so we use the backup var name
           INPUT_TEST_GITHUB_REF: refs/tags/v1.0.0a1
           INPUT_VERSION_FILE_PATH: foobar/version.py
           ALT_GITHUB_OUTPUT: output1.txt
-
       - run: cat output1.txt
       - run: grep -q 'IS_PRERELEASE=true' output1.txt
       - run: grep -q 'VERSION=1.0a1' output1.txt
-
       - run: echo "VERSION = '1.1.1'" > foobar/version.py
       - run: ./check-python-version.py
         env:
           INPUT_SKIP_ENV_CHECK: true
           INPUT_VERSION_FILE_PATH: foobar/version.py
           ALT_GITHUB_OUTPUT: output2.txt
-
       - run: cat output2.txt
       - run: grep -q 'IS_PRERELEASE=false' output2.txt
       - run: grep -q 'VERSION=1.1.1' output2.txt
@@ -55,12 +51,14 @@ jobs:
       - run: |
           mkdir mypackage
           echo "__version__ = 'v1.0post1'" > mypackage/version.py
-
-      - uses: samuelcolvin/check-python-version@main
+      - uses: samuelcolvin/check-python-version@main # zizmor: ignore[unpinned-uses]
         id: check-python-version
         with:
           version_file_path: mypackage/version.py
           test_github_ref: refs/tags/1-post1
-
-      - run: test ${{ steps.check-python-version.outputs.IS_PRERELEASE }} == 'false'
-      - run: test ${{ steps.check-python-version.outputs.VERSION }} == '1.0.post1'
+      - run: test "$IS_PRERELEASE" == 'false'
+        env:
+          IS_PRERELEASE: ${{ steps.check-python-version.outputs.IS_PRERELEASE }}
+      - run: test "$VERSION" == '1.0.post1'
+        env:
+          VERSION: ${{ steps.check-python-version.outputs.VERSION }}

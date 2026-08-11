@@ -1,8 +1,8 @@
-#!/usr/bin/env -S uv run --script
+#!/usr/bin/env -S uv run --script --locked
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#     "packaging==25.0",
+#     "packaging==26.3",
 # ]
 # ///
 import os

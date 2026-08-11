@@ -1,57 +1,49 @@
 name: Check Python Version
 author: Samuel Colvin <s@muelcolvin.com>
 description: Check the release tag matches the library version before deploy
-
 inputs:
   version_file_path:
     description: Path to python file containing the version number string
     required: true
   version_pattern:
     description: >
-      Custom regular expression to find version with, defaults to
-      `(?i)^(__version__|VERSION) *= *([\'"])v?(?P<version>.+?)\2`
+      Custom regular expression to find version with, defaults to `(?i)^(__version__|VERSION) *= *([\'"])v?(?P<version>.+?)\2`
+
     required: false
   test_github_ref:
     description: Version to check, defaults to using `GITHUB_REF` - this is mostly for testing
     required: false
   skip_env_check:
     description: >
-      Set to "true" to skip environment variable (e.g. `GITHUB_REF`, or `input.test_github_ref`) check,
-      mostly useful when you want to use outputs in later steps
-    required: false
+      Set to "true" to skip environment variable (e.g. `GITHUB_REF`, or `input.test_github_ref`) check, mostly useful when you want to use outputs in later steps
 
+    required: false
 outputs:
   IS_PRERELEASE:
-    description: "Either `'true'` or `'false'` whether the version is a pre-release"
+    description: 'Either `''true''` or `''false''` whether the version is a pre-release'
     value: ${{ steps.check-python-version.outputs.IS_PRERELEASE }}
   VERSION:
     description: The "pretty" version string
     value: ${{ steps.check-python-version.outputs.VERSION }}
   VERSION_MAJOR_MINOR:
-    description: "Major and minor version numbers, e.g. `1.2.3` would output `1.2`"
+    description: 'Major and minor version numbers, e.g. `1.2.3` would output `1.2`'
     value: ${{ steps.check-python-version.outputs.VERSION_MAJOR_MINOR }}
-
 runs:
   using: composite
   steps:
-    - uses: astral-sh/setup-uv@v6
+    - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
       with:
         enable-cache: true
-
-    - run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
-      shell: bash
-      env:
-        GITHUB_ACTION_PATH: ${{ github.action_path }}
-
-    - run: check-python-version.py
+        python-version: 3.13
+    - run: '"$GITHUB_ACTION_PATH/check-python-version.py"'
       id: check-python-version
       shell: bash
       env:
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
         INPUT_VERSION_FILE_PATH: ${{ inputs.version_file_path }}
         INPUT_VERSION_PATTERN: ${{ inputs.version_pattern }}
         INPUT_TEST_GITHUB_REF: ${{ inputs.test_github_ref }}
         INPUT_SKIP_ENV_CHECK: ${{ inputs.skip_env_check }}
-
 branding:
   icon: check-circle
   color: orange
