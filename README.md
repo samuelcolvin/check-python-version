@@ -25,7 +25,7 @@ jobs:
   deploy:
     steps:
       - ...
-      - uses: samuelcolvin/check-python-version@ee87cddb8049d2694cc03badc8569765a05cef00 # v5
+      - uses: samuelcolvin/check-python-version@17d859ba0a6af9ffcaac5c70608fed36ed33e32a # v5.1
         id: check-python-version
         with:
           version_file_path: mypackage/version.py
